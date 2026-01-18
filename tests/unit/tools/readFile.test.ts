@@ -1,6 +1,6 @@
 import { readFileTool } from '../../../src/tools/readFile.js';
 import { promises as fs } from 'fs';
-import { FileNotFoundError } from '../../../src/utils/errors.js';
+import { FileNotFoundError, PermissionDeniedError } from '../../../src/utils/errors.js';
 
 // Mock fs module
 jest.mock('fs', () => ({
@@ -30,6 +30,20 @@ describe('readFileTool', () => {
       expect(result.content[0].text).toBe(mockContent);
     });
 
+    it('should read file with base64 encoding', async () => {
+      const mockContent = 'Hello, World!';
+      const base64Content = Buffer.from(mockContent).toString('base64');
+      mockReadFile.mockResolvedValue(Buffer.from(mockContent));
+
+      const result = await readFileTool.execute({
+        path: '/test/binary.dat',
+        encoding: 'base64',
+      });
+
+      expect(mockReadFile).toHaveBeenCalledWith('/test/binary.dat', 'base64');
+      expect(result.content[0].text).toBeDefined();
+    });
+
     it('should throw FileNotFoundError for missing files', async () => {
       const error = new Error('File not found') as NodeJS.ErrnoException;
       error.code = 'ENOENT';
@@ -38,6 +52,25 @@ describe('readFileTool', () => {
       await expect(
         readFileTool.execute({ path: '/missing/file.txt' })
       ).rejects.toThrow(FileNotFoundError);
+    });
+
+    it('should throw PermissionDeniedError for access denied', async () => {
+      const error = new Error('Permission denied') as NodeJS.ErrnoException;
+      error.code = 'EACCES';
+      mockReadFile.mockRejectedValue(error);
+
+      await expect(
+        readFileTool.execute({ path: '/restricted/file.txt' })
+      ).rejects.toThrow(PermissionDeniedError);
+    });
+
+    it('should rethrow other errors unchanged', async () => {
+      const error = new Error('Unknown error');
+      mockReadFile.mockRejectedValue(error);
+
+      await expect(
+        readFileTool.execute({ path: '/test/file.txt' })
+      ).rejects.toThrow('Unknown error');
     });
 
     it('should reject invalid arguments', async () => {
@@ -52,6 +85,12 @@ describe('readFileTool', () => {
       await readFileTool.execute({ path: '/test.txt' });
 
       expect(mockReadFile).toHaveBeenCalledWith('/test.txt', 'utf-8');
+    });
+
+    it('should reject invalid encoding', async () => {
+      await expect(
+        readFileTool.execute({ path: '/test.txt', encoding: 'invalid' })
+      ).rejects.toThrow();
     });
   });
 });
