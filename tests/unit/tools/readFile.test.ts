@@ -32,7 +32,6 @@ describe('readFileTool', () => {
 
     it('should read file with base64 encoding', async () => {
       const mockContent = 'Hello, World!';
-      const base64Content = Buffer.from(mockContent).toString('base64');
       mockReadFile.mockResolvedValue(Buffer.from(mockContent));
 
       const result = await readFileTool.execute({
