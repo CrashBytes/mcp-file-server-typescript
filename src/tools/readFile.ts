@@ -4,12 +4,10 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { FileNotFoundError, PermissionDeniedError } from '../utils/errors.js';
 
 // Validation schema
-const ReadFileArgsSchema = z.object({
+const readFileArgsSchema = z.object({
   path: z.string().min(1, 'Path cannot be empty'),
   encoding: z.enum(['utf-8', 'base64']).default('utf-8'),
 });
-
-export type ReadFileArgs = z.infer<typeof ReadFileArgsSchema>;
 
 export const readFileTool = {
   definition: {
@@ -35,7 +33,7 @@ export const readFileTool = {
 
   async execute(args: unknown) {
     // Validate inputs
-    const { path, encoding } = ReadFileArgsSchema.parse(args);
+    const { path, encoding } = readFileArgsSchema.parse(args);
 
     try {
       const content = await fs.readFile(path, encoding);

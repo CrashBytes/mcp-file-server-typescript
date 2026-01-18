@@ -6,7 +6,7 @@ const absolutePath = z
   .string()
   .refine((path) => resolve(path) === path, 'Path must be absolute');
 
-export const safeFilename = z
+const safeFilename = z
   .string()
   .regex(/^[a-zA-Z0-9._-]+$/, 'Filename contains invalid characters');
 
@@ -25,3 +25,6 @@ export const SearchSchema = z.object({
   recursive: z.boolean().default(true),
   maxResults: z.number().int().positive().max(1000).default(100),
 });
+
+// Export safeFilename for potential external use
+export { safeFilename };

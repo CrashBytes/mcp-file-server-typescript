@@ -5,14 +5,12 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { PermissionDeniedError } from '../utils/errors.js';
 
 // Validation schema
-const WriteFileArgsSchema = z.object({
+const writeFileArgsSchema = z.object({
   path: z.string().min(1, 'Path cannot be empty'),
   content: z.string(),
   encoding: z.enum(['utf-8', 'base64']).default('utf-8'),
   createDirectories: z.boolean().default(false),
 });
-
-export type WriteFileArgs = z.infer<typeof WriteFileArgsSchema>;
 
 export const writeFileTool = {
   definition: {
@@ -47,7 +45,7 @@ export const writeFileTool = {
 
   async execute(args: unknown) {
     const { path, content, encoding, createDirectories } =
-      WriteFileArgsSchema.parse(args);
+      writeFileArgsSchema.parse(args);
 
     try {
       if (createDirectories) {

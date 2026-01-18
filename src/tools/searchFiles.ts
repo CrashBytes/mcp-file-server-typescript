@@ -4,14 +4,12 @@ import { join } from 'path';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { FileNotFoundError } from '../utils/errors.js';
 
-const SearchFilesArgsSchema = z.object({
+const searchFilesArgsSchema = z.object({
   directory: z.string().min(1, 'Directory path cannot be empty'),
   pattern: z.string().min(1, 'Search pattern cannot be empty'),
   recursive: z.boolean().default(true),
   maxResults: z.number().int().positive().max(1000).default(100),
 });
-
-export type SearchFilesArgs = z.infer<typeof SearchFilesArgsSchema>;
 
 async function searchDirectory(
   dir: string,
@@ -75,7 +73,7 @@ export const searchFilesTool = {
 
   async execute(args: unknown) {
     const { directory, pattern, recursive, maxResults } =
-      SearchFilesArgsSchema.parse(args);
+      searchFilesArgsSchema.parse(args);
 
     try {
       await fs.access(directory);
