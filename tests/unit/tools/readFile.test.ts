@@ -31,7 +31,7 @@ describe('readFileTool', () => {
     });
 
     it('should throw FileNotFoundError for missing files', async () => {
-      const error: any = new Error('File not found');
+      const error = new Error('File not found') as NodeJS.ErrnoException;
       error.code = 'ENOENT';
       mockReadFile.mockRejectedValue(error);
 
