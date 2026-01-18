@@ -12,7 +12,7 @@ const WriteFileArgsSchema = z.object({
   createDirectories: z.boolean().default(false),
 });
 
-type WriteFileArgs = z.infer<typeof WriteFileArgsSchema>;
+export type WriteFileArgs = z.infer<typeof WriteFileArgsSchema>;
 
 export const writeFileTool = {
   definition: {
@@ -64,8 +64,9 @@ export const writeFileTool = {
           },
         ],
       };
-    } catch (error: any) {
-      if (error.code === 'EACCES') {
+    } catch (error: unknown) {
+      const err = error as { code?: string };
+      if (err.code === 'EACCES') {
         throw new PermissionDeniedError(path);
       }
       throw error;

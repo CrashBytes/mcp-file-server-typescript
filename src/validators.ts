@@ -6,7 +6,7 @@ const absolutePath = z
   .string()
   .refine((path) => resolve(path) === path, 'Path must be absolute');
 
-const safeFilename = z
+export const safeFilename = z
   .string()
   .regex(/^[a-zA-Z0-9._-]+$/, 'Filename contains invalid characters');
 

@@ -11,7 +11,7 @@ const SearchFilesArgsSchema = z.object({
   maxResults: z.number().int().positive().max(1000).default(100),
 });
 
-type SearchFilesArgs = z.infer<typeof SearchFilesArgsSchema>;
+export type SearchFilesArgs = z.infer<typeof SearchFilesArgsSchema>;
 
 async function searchDirectory(
   dir: string,

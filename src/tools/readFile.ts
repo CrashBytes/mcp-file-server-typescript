@@ -9,7 +9,7 @@ const ReadFileArgsSchema = z.object({
   encoding: z.enum(['utf-8', 'base64']).default('utf-8'),
 });
 
-type ReadFileArgs = z.infer<typeof ReadFileArgsSchema>;
+export type ReadFileArgs = z.infer<typeof ReadFileArgsSchema>;
 
 export const readFileTool = {
   definition: {
@@ -48,11 +48,12 @@ export const readFileTool = {
           },
         ],
       };
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
+    } catch (error: unknown) {
+      const err = error as { code?: string };
+      if (err.code === 'ENOENT') {
         throw new FileNotFoundError(path);
       }
-      if (error.code === 'EACCES') {
+      if (err.code === 'EACCES') {
         throw new PermissionDeniedError(path);
       }
       throw error;
